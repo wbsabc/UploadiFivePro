@@ -1,0 +1,109 @@
+<!--Just some examples. The code cannot run directly.-->
+
+<script src="jquery.uploadifive.js">
+<link href="uploadifive.css" rel="stylesheet" style="text/css"/>  
+
+
+
+
+
+
+
+<a id="btnImport" href="javascript:void(0)" data-bind="visible:editVisible" data-options="iconCls:'icon-save',plain:true">
+	<font color="white">Upload</font>
+</a>
+
+<tr>
+	<td width="30px"></td>
+	<td align="left" width="600px">
+		Select File£º<input id="file_upload" name="file_upload" type="file">
+		<div id="fileQueue" class="fileQueue" style="height: 60px !important;"></div>
+	</td>
+</tr>
+
+
+
+
+
+
+
+<script type="text/javascript">
+
+    $(function () {
+        var settings =
+        {
+            'buttonText': 'Select',
+            'uploadScript': importModel.ImportFileActionFirst,
+            'queueID': 'fileQueue',
+            'queueSizeLimit': 1,
+            'auto': false,
+            'multi': false,
+            'removeCompleted': true,
+            'fileSizeLimit': '0',
+            'fileType': 'Image',
+            'formData': {},
+            'onUpload': function (event) {
+                parent.$.loading.open();
+            },
+            'onQueueComplete': function (event, data) {
+                parent.$.loading.close();
+            },
+            'onUploadError': function (event, queueId, fileObj, errorObj) {
+                parent.$.loading.close();
+            },
+            'onUploadComplete': function (file, datas, response) {
+                var getCacheFun = function(data) {
+                    var importType = $('input[name="ImportType"]:checked').val();
+                    switch (importType) {
+                        case '1':
+                            ImportFirstSucccess(data);
+                            break;
+                        case '2':
+                            ImportSecondSucccess(data);
+                            break;
+                        case '3':
+                            ImportThirdSuccess(data);
+                            break;
+                    }
+                };
+                MyAjax('POST', importModel.getResultByCache, { cacheGuid: datas }, getCacheFun, "", false, true);
+            }
+        };
+
+        $('#file_upload').uploadifive(settings);
+
+        $('#btnImport').click(function () {
+            getParams();
+            $('#file_upload').uploadifive('upload');
+        });
+
+    });
+
+    function getParams() {
+        var setChoice = $('#choice').prop('checked');
+
+        $("#file_upload").data('uploadifive').settings.formData =
+            { 'setChoice': setChoice};
+    }
+
+    function ChangeImportType() {
+        var importType = $('input[name="ImportType"]:checked').val();
+
+        var uploadAction = '';
+
+        switch (importType) {
+            case '1':
+                uploadAction = importModel.ImportFileActionFirst;
+                break;
+            case '2':
+                uploadAction = importModel.ImportFileActionSecond;
+                break;
+            case '3':
+                uploadAction = importModel.ImportFileActionThird;
+                break;
+        }
+
+        $('#file_upload').uploadifive('settings', 'uploadScript', uploadAction);
+        $('#file_upload').uploadifive('clearQueue');
+    }
+</script>
