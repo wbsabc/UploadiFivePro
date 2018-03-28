@@ -1,3 +1,2 @@
 # UploadiFivePro
-Based On UploadiFive
-Just For Study
+Based On UploadiFive. Just For Study.
